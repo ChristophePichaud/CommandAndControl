@@ -1,0 +1,78 @@
+<!-- ** Document index
+
+     $Id: index.docbook 1073 2007-08-26 09:26:37Z ewald-arnold $
+-->
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN"
+                         "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+  <!ENTITY xmlrpc           'XML-RPC'                                >
+  <!ENTITY utf8             'UTF-8'                                  >
+  <!ENTITY xml              'XML'                                    >
+  <!ENTITY ascii            'ASCII'                                  >
+  <!ENTITY wbxml            'WAP Binary XML'                         >
+  <!ENTITY http             'HTTP'                                   >
+  <!ENTITY unicode          'UNICODE'                                >
+
+  <!ENTITY ulxmlrpcpp       '<application>ulxmlrpcpp</application>'  >
+  <!ENTITY copyyears        '2002-2007'                              >
+  <!ENTITY ulxmlrpcpp_email 'ulxmlrpcpp at ewald-arnold dot de'      >
+  <!ENTITY release_info     '<releaseinfo>1.07.01</releaseinfo>'     >
+  <!ENTITY release_date     '<pubdate>Published: <?dbtimestamp format="Y-m-d"?></pubdate>' >
+
+  <!ENTITY linenumering     'linenumbering="numbered"'               >
+
+  <!ENTITY sect_intro                    SYSTEM 'sect_intro.docbook'                   >
+  <!ENTITY sect_variable_types           SYSTEM 'sect_variable_types.docbook'          >
+  <!ENTITY sect_xmlrpc_client_server     SYSTEM 'sect_xmlrpc_client_server.docbook'    >
+  <!ENTITY sect_http_client_server       SYSTEM 'sect_http_client_server.docbook'      >
+  <!ENTITY sect_basic_security           SYSTEM 'sect_basic_security.docbook'          >
+  <!ENTITY sect_mt_xmlrpc_client_server  SYSTEM 'sect_mt_xmlrpc_client_server.docbook' >
+  <!ENTITY sect_mt_http_client_server    SYSTEM 'sect_mt_http_client_server.docbook'   >
+  <!ENTITY sect_xml_parser               SYSTEM 'sect_xml_parser.docbook'              >
+  <!ENTITY sect_wbxml_parser             SYSTEM 'sect_wbxml_parser.docbook'            >
+  <!ENTITY sect_tcpip                    SYSTEM 'sect_tcp_conn.docbook'                     >
+  <!ENTITY sect_ssl                      SYSTEM 'sect_ssl.docbook'                     >
+  <!ENTITY sect_proxy                    SYSTEM 'sect_proxy.docbook'                   >
+  <!ENTITY sect_transfer                 SYSTEM 'sect_transfer.docbook'                >
+  <!ENTITY sect_cookie                   SYSTEM 'sect_cookie.docbook'                  >
+  <!ENTITY sect_unicode                  SYSTEM 'sect_unicode.docbook'                 >
+  <!ENTITY sect_generator                SYSTEM 'sect_generator.docbook'               >
+
+  <!ENTITY chap_bookinfo                 SYSTEM 'bookinfo.docbook'                     >
+  <!ENTITY chap_faq                      SYSTEM 'faq.docbook'                          >
+  <!ENTITY chap_credits                  SYSTEM 'credits.docbook'                      >
+  <!ENTITY chap_appendix                 SYSTEM 'appendix.docbook'                     >
+
+]>
+
+<book lang="en">
+
+&chap_bookinfo;
+
+<chapter id="usage">
+<title>How to use this library</title>
+&sect_intro;
+&sect_variable_types;
+&sect_xmlrpc_client_server;
+&sect_http_client_server;
+&sect_basic_security;
+&sect_mt_xmlrpc_client_server;
+&sect_mt_http_client_server;
+&sect_tcpip;
+&sect_ssl;
+&sect_cookie;
+&sect_proxy;
+&sect_transfer;
+&sect_xml_parser;
+&sect_wbxml_parser;
+&sect_unicode;
+</chapter>
+
+&sect_generator;
+
+&chap_faq;
+&chap_credits;
+&chap_appendix;
+
+</book>

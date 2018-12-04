@@ -1,0 +1,135 @@
+<!-- ** Basic security
+
+     $Id: sect_basic_security.docbook 995 2007-07-15 15:37:19Z ewald-arnold $
+-->
+
+<sect1 id="basic-security">
+<title>Securing Network Transmissions</title>
+
+<para>&ulxmlrpcpp; provides two rather simple ways to secure your transmissions
+without big efforts. There is also
+<link linkend='ssl'>SSL/TLS</link>
+as a third option but this needs additional libraries and other resources as well as
+rather much knowledge.</para>
+
+<itemizedlist>
+ <listitem>
+ <para>First, you can use basic authentication as used with &http;.
+
+<caution>
+<title>This offers very little security</title>
+<para>Think of it mainly as a protection against unintentional access,
+for example from web browsers. This way the browser shows the user an
+authentication dialog and he is aware of the forbidden area.</para>
+<para>Password and username are "encoded" in BASE64 but this almost the same as plain
+text.</para>
+</caution>
+</para>
+
+<formalpara>
+<title>Preparing The Server</title>
+
+<calloutlist>
+
+ <callout arearefs="basic-sec-realm-co" id="basic-sec-realm-link">
+  <para>On the server side assign a name to the according realm
+  (a <emphasis>realm</emphasis> usually describes a subdirectory on
+  the server).
+  Then add some allowed username with password to the realm.</para>
+ </callout>
+
+</calloutlist>
+
+<programlisting>
+
+  TcpIpConnection conn (true, 0x7f000001, 32001);
+  HttpProtocol prot(&amp;conn);
+  HttpServer http_server (&amp;prot);
+
+  http_server.addRealm("/RPC-Sec", "SecureRPCRealm"); <co id="basic-sec-realm-co" linkends="basic-sec-realm-link" />
+  http_server.addAuthentication("ali-baba", "open-sesame", "SecureRPCRealm");
+
+</programlisting>
+
+</formalpara>
+
+<formalpara>
+<title>The Authenticating Client</title>
+
+<calloutlist>
+
+ <callout arearefs="basic-sec-auth-co" id="basic-sec-auth-link">
+  <para>On the client side call the server with the credentials.</para>
+ </callout>
+
+ <callout arearefs="basic-perm-auth-co" id="basic-perm-auth-link">
+  <para>The client may as well set username and password for all further &http;
+  transmissions.</para>
+ </callout>
+
+</calloutlist>
+
+<programlisting>
+
+  TcpIpConnection conn (false, host, port);
+  HttpProtocol prot(&amp;conn);
+  HttpClient http_client(&amp;prot);
+
+  MethodResponse resp = client.call(secureDispatcher,
+                                    "/SecureRPCRealm",
+                                    "ali-baba",
+                                    "open-sesame"); <co id="basic-sec-auth-co" linkends="basic-sec-auth-link" />
+
+  client.setMessageAuthentication("ali-baba", "open-sesame"); <co id="basic-perm-auth-co" linkends="basic-perm-auth-link" />
+
+</programlisting>
+
+</formalpara>
+
+</listitem>
+
+<listitem>
+<para>The second and more important step is to encrypt your calls and responses with
+strong cryptography.</para>
+
+<orderedlist>
+ <title>The idea is to:</title>
+
+ <listitem>
+  <para>build a call and transform it into an &xml; structure</para>
+ </listitem>
+
+ <listitem>
+  <para>encrypt this structure and send it as a single parameter to a special method on
+  the server</para>
+ </listitem>
+
+ <listitem>
+  <para>decrypt the parameter and dispatch it in a second stage to the correct
+  internal method</para>
+ </listitem>
+
+ <listitem>
+  <para>convert the response to an &xml; structure and send it back encrypted</para>
+ </listitem>
+
+ <listitem>
+  <para>decrypt and decode the structure in an additional step to get the result</para>
+ </listitem>
+
+</orderedlist>
+
+<para>This way you can use the same methods as usual. It is just that you put your
+confidental data encrypted in an envelope which you can send visibly over public
+networks. The machine on the other side decrypts the data and does a second processing
+stage. You do nothing special, you just <emphasis>duplicate</emphasis> some steps.</para>
+
+<para>See <command>secure_server.cpp</command> and <command>secure_client.cpp</command> for almost complete
+examples how the whole might look like.</para>
+
+</listitem>
+
+</itemizedlist>
+
+</sect1>
+

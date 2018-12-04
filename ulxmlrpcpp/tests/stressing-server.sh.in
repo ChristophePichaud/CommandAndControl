@@ -1,0 +1,16 @@
+#! /bin/sh
+
+# run server tests with most features
+
+amount=1
+while expr $amount \< 5000 ; do
+
+  ./val1_server @ULXR_FQDN@ 32021 1 1  || (echo "val1_server failed"; exit 1)
+
+  amount=`expr $amount \* 2`
+done
+
+./https_server @ULXR_FQDN@ 32020  || (echo "https_server failed"; exit 1)
+
+./http_server @ULXR_FQDN@ 32022  || (echo "http_server failed"; exit 1)
+

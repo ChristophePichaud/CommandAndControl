@@ -1,0 +1,95 @@
+<html>
+  <head>
+
+  <title>jsxmlRPC :: Examples</title>
+  <link rel="stylesheet" type="text/css" href="css.css">
+  <script src="js-xmlrpc-all_scripts.js" type="text/javascript"></script>
+
+<script language="JavaScript" type="text/javascript">
+    var toval = 500;
+    var rpc = XmlRpc.getObject("http://localhost:32001/RPC2" );
+    var sel = menuObj.document.getElementById("selector");
+    sel.options[1].selected=true;
+    changeTimeout (sel);
+
+    function changeTimeout (menuObj)
+    {
+      var i = menuObj.selectedIndex;
+      if(i >= 0)
+      {
+        toval = menuObj.options[i].value;
+        var time = document.getElementById("time");
+        time.innerHTML = toval;
+      }
+    }
+
+    function handleAllInputs ()
+    {
+      try
+      {
+        var states = [];
+        states = rpc.getAllInputs();
+        var s = ""
+        for (var i = 1; i <= 6; ++i)
+        {
+           var state = states.charAt(i-1) & 1;
+           if (state)
+             s = s + i + ":ein ";
+           else
+             s = s + i + ":aus ";
+
+           document.getElementById("radio" + i).checked = state;
+        }
+
+        var bereich = document.getElementById("bereich");
+        bereich.innerHTML = s;
+        setTimeout('handleAllInputs()', toval);
+      }
+      catch(e)
+      {
+        alert(e)
+      }
+    }
+
+</script>
+
+</head>
+<body onLoad='handleAllInputs ()'>
+
+<div class="content"><a name="top"></a>
+
+<h1><em>jsxmlRPC</em> Live Examples</h1>
+
+<p>hallo</p>
+
+<p>
+
+<form id="myform" name="myform">
+  <input type="button" value="list methods" onclick="handleAllInputs()">
+
+  <br>
+
+  <select id="selector" name="selector" onChange="changeTimeout(this)">
+    <option value="100">100ms</option>
+    <option value="500">500ms</option>
+    <option value="2000">2000ms</option>
+  </select>
+
+  <br>
+
+  <input type="radio" name="radio1" id="radio1" value = "1" checked="0">
+  <input type="radio" name="radio2" id="radio2" value = "0" checked="1">
+  <input type="radio" name="radio3" id="radio3" value = "radio_3" checked=false>
+  <input type="radio" name="radio4" id="radio4" value = "radio_4" >
+  <input type="radio" name="radio5" id="radio5" value = "radio_5" >
+  <input type="radio" name="radio6" id="radio6" value = "radio_6" checked="true">
+
+</form>
+
+</p>
+
+<p id="bereich" name="bereich">bereich</p>
+<p id="time"    name="time">time</p>
+
+  </body>
+</html>
