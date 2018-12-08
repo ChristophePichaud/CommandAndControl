@@ -77,6 +77,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath);D:\Dev\cpp\ulxmlrpcpp-1.7.5</IncludePath>
+    <LibraryPath>$(LibraryPath);D:\Dev\cpp\ulxmlrpcpp-1.7.5</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
