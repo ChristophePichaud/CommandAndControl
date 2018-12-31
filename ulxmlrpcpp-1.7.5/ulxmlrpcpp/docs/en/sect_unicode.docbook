@@ -1,0 +1,66 @@
+<!-- ** Unicode
+
+     $Id: sect_unicode.docbook 928 2006-10-02 16:38:45Z ewald-arnold $
+-->
+
+<sect1 id="unicode">
+<title>Worth to Know About &unicode;</title>
+
+<para>Not so many years ago it was rather complicated for people from different countries
+to communicate over the internet. The usual 8bit wide numbers were not able to represent more
+than 255 different characters and often the result of such a transmission was more or less
+garbage. And it only worked if both sides of the connection knew exactly what the
+other side was using.</para>
+
+<para>To improve this situation <ulink url="http://www.unicode.org">&unicode;</ulink> was
+developed. &unicode; has two main advantages:
+<orderedlist>
+ <listitem>Every character is represented by at least 16bit. This means that the majority
+           of characters used on earth is clearly transmitted over a
+           connection.</listitem>
+ <listitem>There is an exact documentation about the meaning of every number representing
+           a character. So both sides can reliably transmit characters beyond the &ascii;
+           range without guessing the meaning or converting the data.</listitem>
+</orderedlist>
+
+</para>
+
+<para>Unfortunately &unicode; and its wide characters waste a lot of memory. Most of the
+characters in daily use are within the &ascii; range and therefor use only 7 bits. This
+means that 25 bits are
+wasted if your system uses 32bit wide characters. As a compromise &utf8; can be used.
+Depending on the code point of a character &utf8; uses 1 to 5 bytes for storage.
+As a nice side effect a text remains readable even if there are special characters since
+the characters within the &ascii; range are exactly the same.</para>
+
+<para>&ulxmlrpcpp; supports both the wide characters of &unicode; as well as &utf8;.
+If you need wide characters you must enable this at
+<link linkend="compilation">compile time</link>. In this case several additional
+functions and class members are included.</para>
+
+<para>&ulxmlrpcpp; expectes all strings either in wide characters or in &utf8;.
+There are several helper functions to convert your strings if they do
+not already fit. See the api documentation for details.
+
+<orderedlist>encodingToUtf8
+ <listitem><function>asciiToUtf8()</function>,
+           <function>utf8ToAscii()</function>
+ </listitem>
+ <listitem><function>utf8ToUnicode()</function>,
+           <function>unicodeToUtf8()</function>
+ </listitem>
+ <listitem><function>utf8ToEncoding()</function>,
+           <function>encodingToUtf8()</function>,
+           <function>convertEncoding()</function>
+ </listitem>
+ <listitem><function>getUnicode()</function>,
+           <function>getLatin1()</function>
+ </listitem>
+</orderedlist>
+
+</para>
+
+<para>Please note that versions up to 1.4 used 8bit encodings instead of &utf8;.
+This might be a compatibility break in your application.</para>
+
+</sect1>

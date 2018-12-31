@@ -1,0 +1,208 @@
+<!-- ** basic variable types
+
+     $Id: sect_variable_types.docbook 929 2006-10-03 08:56:03Z ewald-arnold $
+-->
+
+<sect1 id="variable-types">
+<title>Basic Variable Types</title>
+
+<para>&ulxmlrpcpp; implements all basic variable types from &xmlrpc; as classes
+which are derived from a common type <classname>Value</classname>.
+
+<variablelist>
+
+ <varlistentry>
+  <term>Boolean</term>
+  <listitem>
+  <para>Used for the boolean values <constant>true</constant> and <constant>false</constant>.
+  Directly corresponds to the C++ type <type>bool</type>.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Integer</term>
+  <listitem>
+  <para>Intended for signed integer values that need at most 32bit to store.
+  The C++ type is system dependent and usually an <type>int</type>.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Double</term>
+  <listitem>
+  <para>The type of choice for floating point numbers. The range is system
+  dependent but usually around +-1.8E308. The default format for transportation is
+  using only +, -, digits and the decimal point. This leads to large strings for huge
+  values with no actual precision in most of the digits. If you are sure there are
+  no compatibility problems on the other side of your connection you can switch to 
+   scientific mode which uses a shorter format with mantissa and exponent like 
+   1.23E-456. This mode is enabled with a call to 
+  <methodname>ulxr::Double::setScientificMode(true)</methodname> </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>String</term>
+  <listitem>
+  <para>Take this type to pass messages.
+  <caution><title>There is a pitfall</title>
+  <para>
+  Since there is no commeon census how characters have to be interpreted and 
+  every system uses its own encoding. For that reason &ulxmlrpcpp; (and
+  <systemitem class="library">expat</systemitem> as well) use
+  <ulink url="http://www.unicode.org">unicode</ulink> throughout the complete
+  library. When compiled without Unicode support the internal storage is done in
+  <abbrev>&utf8;</abbrev> which is a compromise in favour of memory consumption
+  to speed. Earlier versions of &ulxmlrpcpp; used <abbrev>ISO-8859-1</abbrev>
+  in this case.</para>
+  </caution>
+  </para>
+
+  <para>Due to this all you have to take care on how to move your strings into
+  the <classname>String</classname> type as you must know your encoding when you
+  have characters beyond the &ascii; range. If you have
+  <systemitem class="library">iconv</systemitem> installed on your system you
+  may simply convert from your encoding to &utf8; with
+  <code>encodingToUtf8("your-string", "encoding-name")</code>. &ulxmlrpcpp; 
+  contains some more helper functions to cover the most common conversions
+  without <systemitem class="library">iconv</systemitem>.
+  See <xref linkend="unicode"/> for more about this topic.</para>
+
+  <para>There is no limitation in the length of the strings nor is there something like
+  a termination character ('\0' in C).</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Base64</term>
+  <listitem>
+  <para>This type is similar to <classname>String</classname> but is intended
+  for binary data. Since &xml; has some limitations in using characters such binary
+  data should be converted for transportation, in this case
+  <ulink url="http://www.faqs.org/rfcs/rfc2045.html">base64</ulink>.</para>
+
+  <para>For the user this is transparent and you simply store/retrieve your values
+  and the library does the rest.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>DateTime</term>
+  <listitem>
+  <para>This type is also similar to <classname>String</classname> but is intended
+  for time values according to the
+  <ulink url="http://www.w3.org/TR/NOTE-datetime">ISO8601 format.</ulink>.
+  &xmlrpc; uses only a small subset of this specification. Basically
+  only the 17 characters you need to express a complete timestamp like 
+  "20061002T17:26:00" but no details like partial dates, milliseconds or timezones. 
+  </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Array</term>
+  <listitem>
+  <para>This is not really a data type but a possiblity to collect variables. Unlike
+  arrays in many other programming languages an <classname>Array</classname>
+  may contain different data types. You access the members by their index.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Struct</term>
+  <listitem>
+  <para>Similar to the <classname>Array</classname> type this is also a
+  collection of variables.
+  The difference is that you don't get access by an index
+  but by an identifier. So this is like an associative array or a map in C++.</para>
+  </listitem>
+ </varlistentry>
+
+</variablelist>
+
+</para>
+
+<para>For convenience reasons there is also the possibility to use streaming-like
+methods to add parameters to <classname>Struct</classname>s and
+<classname>Array</classname>s. This works similar to the way you would output
+content to <function>std::cout</function>. To avoid abiguities it is by default not
+possible to add intrinsic values like <type>int</type> or <type>double</type>.
+Use <classname>Integer</classname>
+or <classname>Double</classname> if possible. If you really want to handle the
+built-in types add the following line <emphasis>before</emphasis> the &ulxmlrpcpp;
+headers in your sources:
+
+<programlisting>
+
+  #define ULXR_USE_INTRINSIC_VALUE_TYPES
+
+</programlisting>
+
+</para>
+
+<para>Handling the data types might look like this:
+
+<programlisting>
+
+  Array arr;
+  arr.addItem(Integer(1));
+  arr.addItem(String("My String in the array")); <co  id="variable-array-co" linkends="variable-array-link" />
+  arr.addItem(Base64("base64-encoded string"));
+
+  Integer xi = arr.getItem(0); <co  id="variable-access-co" linkends="variable-access-link" />
+  int i = xi.getInteger();
+  String xs = arr.getItem(1);
+  string s = xs.getString();
+
+  Struct st;
+  st.addMember("first member", Double(3.1415)); <co  id="variable-struct-co" linkends="variable-struct-link" />
+  st.addMember("second member", Boolean(true));
+
+  st &lt;&lt; make_member("ima_wstring", String(L"wstring")) <co  id="variable-stream-co" linkends="variable-stream-link" />
+     &lt;&lt; make_member("ima_double", Double(1.0))
+     &lt;&lt; make_member("ima_bool", Boolean(true));
+
+  Double d = st.getMember("first member"); <co  id="variable-get-co" linkends="variable-get-link" />
+
+</programlisting>
+
+<calloutlist>
+
+ <callout arearefs="variable-array-co" id="variable-array-link">
+  <para>Fill an <classname>Array</classname> with some content.</para>
+ </callout>
+
+ <callout arearefs="variable-access-co" id="variable-access-link">
+  <para>Access the array, convert to native data type.</para>
+ </callout>
+
+ <callout arearefs="variable-struct-co" id="variable-struct-link">
+  <para>Fill a <classname>Struct</classname> with some values.</para>
+ </callout>
+
+ <callout arearefs="variable-stream-co" id="variable-stream-link">
+  <para>Fill the <classname>Struct</classname> with streaming operators.</para>
+ </callout>
+
+ <callout arearefs="variable-get-co" id="variable-get-link">
+  <para>Get a value from the <classname>Struct</classname>.</para>
+ </callout>
+
+</calloutlist>
+
+</para>
+
+<note>In case you should wonder why it is rather complicated to assign values to these types:
+<para>
+  I did not implement implicit type conversion because I think it leads to subtle errors.
+  The compiler might choose to convert in a totally different way than you might
+  <emphasis>think</emphasis>
+  it should happen. For the same reason there are no overloaded methods like
+  <function>operator[]</function>
+  in the <classname>Struct</classname> type.
+  Use the according set/get methods instead, they express exactly what happens.
+</para>
+</note>
+
+</sect1>
+

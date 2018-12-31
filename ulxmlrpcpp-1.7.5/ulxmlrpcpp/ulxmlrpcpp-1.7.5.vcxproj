@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{6AC3B42E-502F-48A3-9E80-96D0148857F7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ulxmlrpcpp175</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath);D:\Dev\CommandAndControl\expat-2.2.6\lib;D:\Dev\CommandAndControl\ulxmlrpcpp-1.7.5</IncludePath>
+    <LibraryPath>$(LibraryPath);D:\Dev\CommandAndControl\expat-2.2.6\win32\bin\Debug</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_DEBUG;ULXMLRPCPP175_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;ULXMLRPCPP175_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ULXMLRPCPP175_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;ULXMLRPCPP175_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="ulxmlrpcpp.h" />
+    <ClInclude Include="ulxr_cached_resource.h" />
+    <ClInclude Include="ulxr_call.h" />
+    <ClInclude Include="ulxr_callparse.h" />
+    <ClInclude Include="ulxr_callparse_base.h" />
+    <ClInclude Include="ulxr_callparse_wb.h" />
+    <ClInclude Include="ulxr_config-bcb5.h" />
+    <ClInclude Include="ulxr_config-cygwin.h" />
+    <ClInclude Include="ulxr_config-msvc.h" />
+    <ClInclude Include="ulxr_config.h" />
+    <ClInclude Include="ulxr_connection.h" />
+    <ClInclude Include="ulxr_dispatcher.h" />
+    <ClInclude Include="ulxr_except.h" />
+    <ClInclude Include="ulxr_expatwrap.h" />
+    <ClInclude Include="ulxr_file_resource.h" />
+    <ClInclude Include="ulxr_htmlform_handler.h" />
+    <ClInclude Include="ulxr_http_client.h" />
+    <ClInclude Include="ulxr_http_protocol.h" />
+    <ClInclude Include="ulxr_http_server.h" />
+    <ClInclude Include="ulxr_log4j.h" />
+    <ClInclude Include="ulxr_method_adder.h" />
+    <ClInclude Include="ulxr_mtrpc_server.h" />
+    <ClInclude Include="ulxr_mutex.h" />
+    <ClInclude Include="ulxr_protocol.h" />
+    <ClInclude Include="ulxr_requester.h" />
+    <ClInclude Include="ulxr_response.h" />
+    <ClInclude Include="ulxr_responseparse.h" />
+    <ClInclude Include="ulxr_responseparse_base.h" />
+    <ClInclude Include="ulxr_responseparse_wb.h" />
+    <ClInclude Include="ulxr_signature.h" />
+    <ClInclude Include="ulxr_ssl_connection.h" />
+    <ClInclude Include="ulxr_tcpip_connection.h" />
+    <ClInclude Include="ulxr_value.h" />
+    <ClInclude Include="ulxr_valueparse.h" />
+    <ClInclude Include="ulxr_valueparse_base.h" />
+    <ClInclude Include="ulxr_valueparse_wb.h" />
+    <ClInclude Include="ulxr_virtual_resource.h" />
+    <ClInclude Include="ulxr_wbxmlparse.h" />
+    <ClInclude Include="ulxr_xmlparse.h" />
+    <ClInclude Include="ulxr_xmlparse_base.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ulxmlrpcpp.cpp" />
+    <ClCompile Include="ulxr_cached_resource.cpp" />
+    <ClCompile Include="ulxr_call.cpp" />
+    <ClCompile Include="ulxr_callparse.cpp" />
+    <ClCompile Include="ulxr_callparse_base.cpp" />
+    <ClCompile Include="ulxr_callparse_wb.cpp" />
+    <ClCompile Include="ulxr_connection.cpp" />
+    <ClCompile Include="ulxr_dispatcher.cpp" />
+    <ClCompile Include="ulxr_except.cpp" />
+    <ClCompile Include="ulxr_expatwrap.cpp" />
+    <ClCompile Include="ulxr_file_resource.cpp" />
+    <ClCompile Include="ulxr_htmlform_handler.cpp" />
+    <ClCompile Include="ulxr_http_client.cpp" />
+    <ClCompile Include="ulxr_http_protocol.cpp" />
+    <ClCompile Include="ulxr_http_server.cpp" />
+    <ClCompile Include="ulxr_log4j.cpp" />
+    <ClCompile Include="ulxr_mtrpc_server.cpp" />
+    <ClCompile Include="ulxr_mutex.cpp" />
+    <ClCompile Include="ulxr_protocol.cpp" />
+    <ClCompile Include="ulxr_requester.cpp" />
+    <ClCompile Include="ulxr_response.cpp" />
+    <ClCompile Include="ulxr_responseparse.cpp" />
+    <ClCompile Include="ulxr_responseparse_base.cpp" />
+    <ClCompile Include="ulxr_responseparse_wb.cpp" />
+    <ClCompile Include="ulxr_signature.cpp" />
+    <ClCompile Include="ulxr_ssl_connection.cpp" />
+    <ClCompile Include="ulxr_tcpip_connection.cpp" />
+    <ClCompile Include="ulxr_value.cpp" />
+    <ClCompile Include="ulxr_valueparse.cpp" />
+    <ClCompile Include="ulxr_valueparse_base.cpp" />
+    <ClCompile Include="ulxr_valueparse_wb.cpp" />
+    <ClCompile Include="ulxr_virtual_resource.cpp" />
+    <ClCompile Include="ulxr_wbxmlparse.cpp" />
+    <ClCompile Include="ulxr_xmlparse.cpp" />
+    <ClCompile Include="ulxr_xmlparse_base.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,175 @@
+<!-- ** Appendix
+
+     $Id: appendix.docbook 996 2007-07-16 07:53:58Z ewald-arnold $
+-->
+
+<appendix id="appendix">
+
+<sect1 id="installation">
+<title>Installation</title>
+
+<sect2 id="obtain">
+<title>How to obtain &ulxmlrpcpp;</title>
+
+<para>Major releases and bug fixes of &ulxmlrpcpp; can be found in the
+<ulink url="http://sourceforge.net/project/showfiles.php?group_id=49635">download
+area</ulink> of its homepage.</para>
+
+<para>There is also the possibility to update from
+<ulink url="http://sourceforge.net/cvs/?group_id=49635">anonymous cvs</ulink>
+to obtain the most recent sources.</para>
+
+</sect2>
+
+<sect2 id="requirement">
+<title>Requirements</title>
+
+<para>In order to successfully compile &ulxmlrpcpp;, you need the
+<systemitem class="library">expat</systemitem> library.
+<systemitem class="library">expat</systemitem> should already be contained in every
+distribution. Otherwise you can download it from
+<ulink url="http://expat.sourceforge.net">http://expat.sourceforge.net</ulink>.
+</para>
+
+</sect2>
+
+<sect2 id="compilation">
+<title>Compilation and installation</title>
+
+<para>In order to compile and install &ulxmlrpcpp; on your system, type the
+following in the base directory of the &ulxmlrpcpp; distribution:
+
+<screen>
+<prompt>%</prompt> <userinput>./configure</userinput>
+<prompt>%</prompt> <userinput>make</userinput>
+<prompt>%</prompt> <userinput>make install</userinput>
+</screen>
+
+There are some options for <userinput>configure</userinput> you might be interested in:
+
+<variablelist>
+
+ <varlistentry>
+   <term><token>--enable-unicode</token></term>
+   <listitem><para>By default &ulxmlrpcpp; uses standard 8bit wide strings (<token>std::string</token>
+   and <token>const char*</token> to be more precise). If you need basic support for
+   <ulink url="http://www.unicode.org">Unicode</ulink> and it's 16bit or 32bit wide characters
+   you must add this parameter when invoking <userinput>configure</userinput>.
+   </para></listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><token>--enable-epoll</token></term>
+   <listitem><para>By default &ulxmlrpcpp; uses calls to <function>select()</function> to find out about
+   availability of data from a socket.
+   There are resource limitations on this call. On Linux systems with kernel 2.6 and later
+   you might want to enable the usage of <function>epoll()</function> instead.
+   </para></listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><token>--enable-log4j</token></term>
+   <listitem><para>&ulxmlrpcpp; contains a simple helper class that uses logging features
+   taken from <ulink url="http://logging.apache.org/log4j/docs/index.html">Log4J</ulink>.
+   On startup you need to invoke <function>ulxr::intializeLog4J(argv[0])</function>
+   to initialize logging and afterwards every call to
+   <function>ulxr::getLogger4J()-&gt;send(level, message)</function> will send a debug
+   message encapsulated in an &xml; structure over the network to the local port 4448.
+   <ulink url="http://logging.apache.org/log4j/docs/chainsaw.html">Chainsaw</ulink>
+   can be used as logging host to view the messages when an <token>XMLSocketReceiver</token>
+   is configured.</para>
+
+   <para>The above option uses this logging feature to send the internal debugging
+   messages not to the console output but instead to a logging host. But for this
+   to take effect you also need to <token>#define</token> the various
+   <token>ULXR_DEBUG_...</token>
+   and <token>ULXR_SHOW_...</token> macros in the according source files. To enable globally
+   you can enable the predefined macros in <filename>ulxmlrpcpp.h</filename> or
+   the according <filename>config-...</filename> files.</para>
+   </listitem>
+ </varlistentry>
+
+</variablelist>
+
+
+</para>
+
+<para>To run the tests and examples type the following and change to the
+subdirectory "tests" afterwards:
+
+<screen>
+<prompt>%</prompt> <userinput>make check</userinput>
+</screen>
+
+</para>
+
+<para>You will find some validator applications and some client/server pairs.
+For example <filename>val1_server</filename> and <filename>val1_client</filename>
+which implement the test suite from
+<ulink url="http://validator.xmlrpc.com">XML-RPC</ulink>.</para>
+
+<para>Since &ulxmlrpcpp; uses <application>autoconf</application> you should have
+not trouble compiling it. Should you run into problems please report them to
+the the author at <ulink url="mailto:ulxmlrpcpp at ewald-arnold dot de"
+>ulxmlrpcpp at ewald-arnold dot de</ulink></para>
+
+</sect2>
+
+<!-- ===================================== -->
+
+<sect2 id="creating-rpms">
+<title>Creating and Installing an RPM</title>
+
+<para>Using the previous installation procedure has drawacks when you
+want do uninstall or upgrade to a newer version. Maybe you rather want to benefit
+from the common mechanism provided by <application>rpm</application>.
+Before installing the library this way you need to create rpm packages
+which requires some developer tools like <application>doxygen</application>
+or <application>docbook</application> and a bit of experience in this
+matter.</para>
+
+<para>This can be done by running the following command in the top level directory
+of the source distribution:
+
+<screen width="40">
+ <prompt>%</prompt> <userinput>make rpm</userinput>
+</screen>
+
+After completion you will receive two rpm packages: one for the library and the
+headers and one for the documentation. They are usually located at
+<filename class="directory">/usr/src/packages/RPMS</filename>.
+</para>
+
+<para>In case you are using a Red Hat Fedora distribution you should better use
+the optimized rpm file
+<filename>rpm/fedora/ulxmlrpcpp.spec</filename>.</para>
+
+</sect2>
+
+<!-- ===================================== -->
+
+<sect2 id="installing-others">
+<title>Installing on other systems</title>
+
+<para>If you are using a compiler on a platform not directly supported you must
+set up your own project files for your compiler. All adjustments are done in
+<filename class='headerfile'>ulxmlrpcpp.h</filename>. To benefit from updates it
+is of course better to move your own settings to a configuration file and
+include it.<para>
+
+</para>See <filename class='headerfile'>config-bcb5.h</filename> as an example
+for Borland's CBuilder.</para>
+
+<note>
+ <title>Once you have ported &ulxmlrpcpp; to a new platform:</title>
+ <para>Please send
+ <ulink url="mailto:ulxmlrpcpp at ewald-arnold dot de">me</ulink>
+ your files for inclusion in the next distribution.
+ You will certainly make some people happy with this.</para>
+</note>
+
+</sect2>
+
+</sect1>
+
+</appendix>

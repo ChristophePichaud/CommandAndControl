@@ -1,0 +1,145 @@
+<!-- ** multithreaded xmlrpc client and server
+
+     $Id: sect_mt_xmlrpc_client_server.docbook 928 2006-10-02 16:38:45Z ewald-arnold $
+-->
+
+<sect1 id="mt-xmlrpc-client-server">
+<title>Multi-Processing &xmlrpc;</title>
+
+<sect2 id="mt-rpc-server">
+<title>The Multi-Threaded Server</title>
+
+<para>Starting the multithreaded server is a bit more complicated than the single
+threaded one. First you have to create the server object and tell it how many threads
+you want to have. Then you start the dispatcher threads. Afterwards you can either
+wait for all the threads to terminate or do something more useful until the
+termination.
+
+<programlisting>
+
+  MultiThreadRpcServer server(protocol, num_threads); <co id="mt-rpc-server-create-co" linkends="mt-rpc-server-create-link" />
+  server.addMethod(&amp;testcall,    <co id="mt-rpc-server-add-co" linkends="mt-rpc-server-add-link" />
+                    Struct::getValueName(),
+                    "testcall",
+                    Integer::getValueName() + "," + Integer::getValueName(),
+                    "Testcase with a c-function");
+  unsigned started = server.dispatchAsync(); <co id="mt-rpc-server-start-co" linkends="mt-rpc-server-start-link" />
+  do_some_work(); <co id="mt-rpc-server-useful-co" linkends="mt-rpc-server-useful-link" />
+  server.waitAsync(false, true); <co id="mt-rpc-server-wait-co" linkends="mt-rpc-server-wait-link" />
+
+</programlisting>
+
+<calloutlist>
+
+ <callout arearefs="mt-rpc-server-create-co" id="mt-rpc-server-create-link">
+  <para>Create the server object.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-server-add-co" id="mt-rpc-server-add-link">
+  <para>Add rpc methods.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-server-start-co" id="mt-rpc-server-start-link">
+  <para>Start all threads.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-server-useful-co" id="mt-rpc-server-useful-link">
+  <para>Do something useful in the meanwhile.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-server-wait-co" id="mt-rpc-server-wait-link">
+  <para>Wait for all threads to finish before terminating the application.</para>
+ </callout>
+
+</calloutlist>
+
+</para>
+
+<para>One problem is it currently to terminate the server. Since I have not yet
+found a portable and good solution to make the threads terminate regularly while
+waiting for connections I usually use a shutdown method which I invoke via &xmlrpc;.
+This method has to be sent to all threads. See the server example files.
+One big drawbacks is that you have to secure this method against attacks.</para>
+
+</sect2>
+
+<sect2 id="mp-rpc-server">
+<title>The Multi-Processing Server</title>
+<para>On Unix-like systems there is another possiblity if you need parallel
+processing. <classname>funtik::MultiProcessRpcServer</classname> has the advantage
+to fork child processes to perform additional tasks.</para>
+
+<para>See the according examples files under
+<filename class="directory">tests/contrib</filename> how to use this class.</para>
+
+</sect2>
+
+<sect2 id="mt-rpc-client">
+<title>The Client</title>
+
+<para>The client part is almost equal to the single threaded version. The only
+thing you have to do is to provide an additional parameter which contains a
+method that handles the response. This can be a normal function or a member
+of an object:
+
+<programlisting>
+
+  TcpIpConnection conn (false, host, port);
+  HttpProtocol prot(&amp;conn);
+
+  Requester client(&amp;prot);
+  MethodCall testcall ("testcall");
+  client.call(testcall, "/RPC2", make_receiver(receiver_func));
+
+</programlisting>
+
+</para>
+
+<para>The <methodname>call()</methodname> method sends the call and then
+creates a thread to start this method which is expected to handle the
+return value or maybe an error message. So the response handler should
+look something like this:
+
+<programlisting>
+
+  void receiver_func (const MethodResponse &amp;resp) <co id="mt-rpc-client-func-co" linkends="mt-rpc-client-func-link" />
+  {
+    if (!resp.isOK())  <co id="mt-rpc-client-error-co" linkends="mt-rpc-client-error-link" />
+    {
+      ...
+      return;
+    }
+
+    Mutex::Locker locker(receiver_mutex); <co id="mt-rpc-client-lock-co" linkends="mt-rpc-client-lock-link" />
+    unsigned num = Integer(resp.getResult()).getInteger(); <co id="mt-rpc-client-process-co" linkends="mt-rpc-client-process-link" />
+    ...
+  }
+
+</programlisting>
+
+<calloutlist>
+
+ <callout arearefs="mt-rpc-client-func-co" id="mt-rpc-client-func-link">
+  <para>Create a receiver for the response.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-client-error-co" id="mt-rpc-client-error-link">
+  <para>Handle a potential error response.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-client-lock-co" id="mt-rpc-client-lock-link">
+  <para>Lock this area againt concurrent access if neccessary.</para>
+ </callout>
+
+ <callout arearefs="mt-rpc-client-process-co" id="mt-rpc-client-process-link">
+  <para>Extract and process the response values.</para>
+ </callout>
+
+</calloutlist>
+
+</para>
+
+</sect2>
+
+</sect1>
+

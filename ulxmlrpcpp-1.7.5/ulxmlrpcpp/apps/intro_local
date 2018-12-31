@@ -1,0 +1,5 @@
+# start http_server from tests directory in advance
+# then this lists it's services
+
+introspect localhost:32001/RPC2
+

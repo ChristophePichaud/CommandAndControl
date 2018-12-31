@@ -1,0 +1,29 @@
+<!-- ** The faqs
+
+     $Id: faq.docbook 752 2005-06-24 21:17:13Z ewald-arnold $
+-->
+
+<chapter id="faq">
+<title>Frequently And Never Asked Questions</title>
+
+<qandaset id="faqlist">
+
+ <qandaentry>
+
+  <question>
+   <para>Where can I ask a question regarding &ulxmlrpcpp;?</para>
+  </question>
+
+  <answer>
+   <para>Send a mail to the according
+   <ulink url="http://sourceforge.net/mail/?group_id=49635">mailing list</ulink>
+   or point your browser to the
+   <ulink url="http://sourceforge.net/forum/?group_id=49635">forum</ulink>.</para>
+  </answer>
+
+ </qandaentry>
+
+</qandaset>
+
+</chapter>
+

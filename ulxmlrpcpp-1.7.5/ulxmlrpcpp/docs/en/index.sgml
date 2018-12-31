@@ -1,0 +1,826 @@
+<!doctype linuxdoc system>
+<article>
+<title>The ulxmlrpcpp Handbook
+<author>Ewald Arnold <tt>ulxmlrpcpp at ewald-arnold dot de</tt>
+<date>Version 1.5.0, 2005-05-30
+<abstract>
+This Handbook describes ulxmlrpcpp Version 1.5.0
+</abstract>
+
+<toc>
+
+<sect>Introduction
+
+<p>
+XML-RPC is an extensible  mechanism allowing a computer
+to offer a limited set of services which can be accessed from anywhere
+in the net.
+
+XML-RPC uses common and easy to learn internet standards like
+<htmlurl url="http://www.w3.org/XML/"
+        name="XML">.
+and
+<htmlurl url="http://www.faqs.org/rfcs/rfc2616.html"
+         name="HTTP">.
+
+<tt>ulxmlrpcpp</tt> is a library to perform such calls in an object oriented approach
+implemented in C++. It is intended to have simple interfaces and to be easy to
+learn. But it shall still be fully compliant to the standards and safe in it's use.
+
+<sect1>Changes
+<p>See file ChangeLog
+
+
+<sect>Installation
+<p>
+
+<sect1>How to obtain ulxmlrpcpp
+<p>
+
+Major releases and bug fixes of
+<tt>ulxmlrpcpp</tt> can be found in the
+<htmlurl url="http://sourceforge.net/project/showfiles.php?group_id=49635"
+        name="download area"> of its homepage.
+
+There is also the possibility to update from
+<htmlurl url="http://sourceforge.net/cvs/?group_id=49635"
+        name="anonymous cvs">
+to obtain the most recent sources.
+
+
+<sect1>Requirements
+<p>
+
+In order to successfully compile <tt>ulxmlrpcpp</tt>, you need the
+<tt>expat</tt> library. <tt>expat</tt> should already be contained in every
+distribution. Otherwise you can download ist from
+<htmlurl url="http://expat.sourceforge.net"
+        name="http://expat.sourceforge.net">.
+
+<sect1>Compilation and installation
+<p>
+
+In order to compile and install ulxmlrpcpp on your system, type the
+following in
+the base directory of the ulxmlrpcpp distribution:
+
+<tscreen><verb>
+% ./configure
+% make
+% make install
+</verb></tscreen>
+
+To run the tests and examples type the following and change to the
+subdirectory "tests" afterwards:
+
+<tscreen><verb>
+% make check
+</verb></tscreen>
+
+You will find some validator applications and some client/server pairs.
+For example <tt>val1_server</tt> and <tt>val1_client</tt> which
+implement the test suite from
+<htmlurl url="http://validator.xmlrpc.com" name = "XML-RPC">.
+
+<p>
+Since ulxmlrpcpp uses <tt>autoconf</tt> you should have not trouble
+compiling it.
+Should you run into problems please report them to the the author at
+<htmlurl url="mailto:ulxmlrpcpp at ewald-arnold dot de"
+         name = "ulxmlrpcpp at ewald-arnold dot de">
+
+
+<p>
+<sect> Usage <p>
+This chapter explains the basics in using this library. To learn more about the
+details please read the api handbook which you can either
+<htmlurl url="http://sourceforge.net/project/showfiles.php?group_id=49635"
+          name="download from the homepage">
+or generate yourself if you have
+<htmlurl url="http://www.doxygen.org/index.html"
+          name="doxygen">
+installed. To generate yourself use
+the config-file in the top level directory of the source distribution.
+
+Please also try the example files in the subdirectory <tt>tests</tt>
+which are compiled with <verb>make check</verb>
+
+<sect1>Basic Variable Types
+<p>
+<tt>ulxmlrpcpp</tt> implements all basic variable types as classes which are derived from
+a common type <tt>Value</tt>.
+
+<descrip>
+  <tag/Boolean/
+    Used for the boolean values <tt/true/ and <tt/false/.
+    Directly corresponds to the C++ type <tt/bool/.
+
+  <tag/Integer/
+    Intended for signed integer values that need at most 32bit to store.
+    The C++ type is system dependent and usually an <tt/int/.
+
+  <tag/Double/
+    The type of choice for floating point numbers.
+    The range is system dependent but usually around +-10E356.
+
+  <tag/String/
+    Take this type to pass messages. There is a little pitfall since there
+    is no commeon census how characters have to be interpreted and every system uses
+    its own encoding. For that reason <tt/ulxmlrpcpp/ (and <tt/expat/ as well) uses
+    <htmlurl url="http://www.unicode.org" name="unicode"> throughout the complete library.
+    The internal storage is done
+    in <tt/UTF-8/ which is a compromise in favour of memory consumption to speed.
+
+    Due to this all you have to take care on how to move your strings into our
+    <tt/String/ type as you must know your encoding when you have characters
+    beyond the ascii range. If you have <tt/iconv/ installed on your system you may
+    simply convert from your encoding to utf8 with
+    <verb>ulxr::encodeToUtf8("your-string", "encoding-name")</verb>
+
+    There is no limitation in the length of the strings nor is there something like
+    a termination character ('\0' in C).
+
+  <tag/Base64/
+    This type is similar to <tt/String/ but is intended for binary data.
+    Since XML has some limitations in using characters such binary data must be
+    converted for transportation, in this case
+     <htmlurl url="http://www.faqs.org/rfcs/rfc2045.html"
+              name="base64">.
+
+    For the user this is transparent and you simply store/retrieve your values and
+    the library does the rest.
+
+  <tag/DateTime/
+    This type is also similar to <tt/String/ but is intended for time values
+    according to the
+    <htmlurl url="http://www.w3.org/TR/NOTE-datetime" name="ISO8601 format.">.
+
+    Currently the user is responsible for the conversion to and from this format
+    as the library just takes care about the type and not the content.
+
+  <tag/Array/
+    This is not really a data type but a possiblity to collect variables. Unlike
+    arrays in many other programming languages an Array may contain different
+    data types. You access the members by their index.
+
+  <tag/Struct/
+    Similar to the Array type this is also a collection of variables.
+    The difference is that you don't get access by an index
+    but by an identifier. So this is like an associative array or a map in C++.
+
+</descrip>
+
+  <p>
+  For convenience reasons there is also the possiblity to use streaming-like methods to
+  add parameters to structs and arrays. Similar to the way you would output content to
+  std::cout. To avoid abiguities it is by default not possible to add intrinsic values
+  like int or double. Use Integer() or Double() if possible. If you really want
+  to handle the built-in types add the following line <bf>before</bf> the ulxr headers in
+  your sources:
+
+<tscreen><verb>
+  #define ULXR_USE_INTRINSIC_VALUE_TYPES
+</verb></tscreen>
+
+<p>
+  Handling the data types might look like this:
+
+<tscreen><verb>
+  using namespace ulxr;
+
+  // fill Array with some content
+
+  Array arr;
+  arr.addItem(Integer(1));
+  arr.addItem(String("My String in the array"));
+  arr.addItem(Base64("base64-encoded string"));
+
+  // access array content, convert to "native" data type
+
+  Integer xi = arr.getItem(0);
+  int i = xi.getInteger();
+
+  String xs = arr.getItem(1);
+  string s = xs.getString();
+
+  // fill Struct
+
+  Struct st;
+  st.addMember("first member", Double(3.1415));
+  st.addMember("second member", Boolean(true));
+
+  st &lt;&lt; ulxr::make_member("ima_wstring", String(L"wstring"))
+     &lt;&lt; ulxr::make_member("ima_double", Double(1.0))
+     &lt;&lt; ulxr::make_member("ima_bool", Boolean(true));
+
+  // access struct content
+
+  Double d = st.getMember("first member");
+</verb></tscreen>
+
+
+<sect1>Standalone XML-RPC Client and Server
+<p>
+
+<sect2>The Server
+<p>
+
+A minimal implementation comprises a mechanism that waits for a call, dispatches it
+to the desired function and finally returns the method result.
+
+The following examples omit error checking for ease of understanding.
+A connection is established and the call is processed.
+
+  <p>
+  If you have methods that take more than one or two parameters it is an error prone taks to create
+  the needed signature string manually. For that purpose there a class <tt>Signature</tt> that handles
+  the parameters and generates the signature strings. It is also possible to "stream-in" the
+  parameters.
+
+<tscreen><verb>
+  // expect calls from 127.0.0.1 (localhost)
+
+  HttpConnection conn (0x7f000001, 32000);
+  HttpProtocol prot(&amp;conn, conn.getHostName());
+  Dispatcher server(&amp;prot);
+
+  server.addMethod(&amp;testcall,
+                   "struct",
+                   "testcall",
+                   "int",
+                   "Returns input, difference and result");
+
+  server.addMethod(&amp;testcall_with_many_params,
+                   "struct",
+                   "testcall_with_many_params",
+                   Signature() &lt;&lt; Integer()
+                               &lt;&lt; String()
+                               &lt;&lt; Double(),
+                   "Performs action xyz");
+
+  MethodCall call = server.waitForCall();
+  MethodResponse resp = server.dispatchCall(call);
+  server.sendResponse(resp);
+</verb></tscreen>
+
+<p>
+And now the method that does to real work. In our case it just takes a number as
+input, adds a value and returns a Struct that contains the original value,
+the difference and the result.
+
+<tscreen><verb>
+  MethodResponse testcall (const MethodCall &amp;calldata)
+  {
+    Integer i = calldata.getParam(0);
+
+    Struct st;
+
+    st.addMember("before", i);
+    st.addMember("difference", Integer(1111));
+    st.addMember("after", Integer(i.getInteger()+1111));
+
+    return MethodResponse(st);
+  }
+</verb></tscreen>
+
+The rpc method may also also be implemented as a normal member function. To access it you
+need some wrapper function. By using "make_method" this is done automatically:
+
+For convenience and clearity there is also a "make_method" for static class methods or simple
+functions.
+
+<tscreen><verb>
+    class TestWorker
+    {
+     public:
+       TestWorker ()
+         {}
+
+       ulxr::MethodResponse testcall1 (const ulxr::MethodCall &amp;calldata)
+       {
+          ...
+       }
+    };
+
+    ulxr::MethodResponse testcall (const ulxr::MethodCall &amp;calldata)
+    {
+       ....
+    }
+
+    server.addMethod(make_method(&amp;testcall),
+                     ulxr::Signature(ulxr::Integer()),
+                     "testcall_function",
+                     ulxr::Signature(ulxr::Integer())
+                           .addParam(ulxr::Integer()),
+                     "Testcase with a c-function");
+
+
+    TestWorker worker;
+
+    server.addMethod(make_method(worker, &amp;TestWorker::testcall1),
+                     ulxr::Signature(ulxr::Struct()),
+                     "testcall_in_class_dynamic",
+                     ulxr::Signature(ulxr::Integer()),
+                     "Testcase with a dynamic method in a class");
+</verb></tscreen>
+
+<sect2>The Client
+<p>
+Setting up a client is easy, too. Just select the connection, describe the method and
+the parameters and call it. The example does no further processing but just shows
+the result as XML output.
+<p>
+In rare cases you may want to send a call without the need to check for a response.
+Then you invoke <tt>transmit()</tt> instead of <tt>call()</tt>. In this case
+the server will omit the response. Network problems, on the other hand, will be reported as
+usual.
+
+<bf>But caution</bf>: This is an <tt>ulxmlrpcpp</tt> extension. Servers from other implementations
+will always send a response so you might receive garbage from the next call or maybe
+generate a lot of error messages on the remote server.
+
+<tscreen><verb>
+  HttpConnection conn ("localhost", 32000);
+  HttpProtocol prot(&amp;conn, conn.getHostName());
+  Requester client(&amp;prot);
+
+  // our method needs a single number as input
+
+  MethodCall testcall ("testcall");
+  testcall.addParam(Integer(123));
+
+  MethodResponse resp = client.call(testcall);
+  cout &lt;&lt; "call result: \n"
+       &lt;&lt; resp.getXml(0);
+</verb></tscreen>
+
+<sect1>Http Client and Server
+<p>
+Another, more flexible possibility is it, to set up a simple web server,
+that handles complete http transactions.
+
+As a side effect it does not only
+handle XML-RPC requests but also passes files to a web browser or stores/deletes files
+which is also part of the HTTP standard.
+
+<sect2>The Server
+<p>
+<tscreen><verb>
+    // accept connects from "localhost" on port 80 (web browser access)
+    HttpConnection conn (0x7f000001, 80);
+    HttpProtocol prot(&amp;conn, conn.getHostName());
+    HttpServer http_server (&amp;prot);
+
+    // this the internal root of the http server
+    http_server.setHttpRoot("/http-directory/public_html");
+
+    // setup an xml-rpc dispatcher
+    Dispatcher rpc_server(&amp;conn);
+
+    // add method including signature for parameters and description
+    rpc_server.addMethod(&amp;testcall,
+                         "struct",
+                         "testcall",
+                         "int, int"
+                         "Testcase with a c-function");
+
+    // let the http server know about the rpc-dispatcher
+    http_server.setRpcDispatcher(&amp;rpc_server);
+
+    // run forever...
+    http_server.runPicoHttpd();
+</verb></tscreen>
+
+<sect2>The Client
+<p>
+The client finally may access the server via the http protocol to store, retrieve
+and delete files. At the same time it might of course send xml-rpc requests.
+
+<tscreen><verb>
+     HttpConnection conn ("localhost", 32000);
+     HttpProtocol prot(&amp;conn, conn.getHostName());
+     HttpClient client(&amp;prot);
+
+     string s;
+
+     // simulate web browser and get html file
+     s = client.msgGET("/index.html");
+
+     // store a file on the server
+     client.msgPUT("hallo put", "text/plain", "/putmsg.txt");
+
+     // delete a file on the server
+     client.doDELETE("/putmsg.txt");
+</verb></tscreen>
+
+
+
+<sect1>Processing HTML requests
+<p>
+The default implementation of the http server class only handles requests
+to existing files below the http root directory. This means that only static
+content on the hard disk can be processed.
+
+<p>
+But often you must process virtual content which is derived from volatile data in the
+memory of some application. You can extend the functionality in several ways. One of
+them might be to derive a new class and handle everything "manually".
+
+<p>But instead of this you should use the helper classes that come with
+<tt>ulxmlrpcpp</tt>: handlers for http requests and for processing form data and
+html content.
+
+<sect2>HTTP Handlers
+<p>
+There are several types of requests you can send to a http server. The most common
+ones are the following.
+
+<itemize>
+ <item><bf>PUT</bf> to send some data to a server
+ <item><bf>GET</bf> to query data
+ <item><bf>POST</bf> for requests that modify and afterwards return data
+                  (more or less a combination of PUT and GET)
+ <item><bf>DELETE</bf> delete some data
+</itemize>
+
+You can add handlers for each of these methods to a http server object. Each handler
+is usually responsible for a master resource. You can think of a master resource as
+some sort of directory. Each master resource contains one or more subresources which
+are similar to files.
+
+<tscreen><verb>
+class RpcInfoHandler : public ulxr::HtmlFormHandler
+{
+   public:
+
+     // create a handler for resources below "/rpc-info/"
+     RpcInfoHandler()
+       : ulxr::HtmlFormHandler("/rpc-info/")
+     {
+       // add subresources for several names which are routed to member methods
+       addSubResource("",              this, &amp;RpcInfoHandler::handle_index);
+       addSubResource("index.html",    this, &amp;RpcInfoHandler::handle_index);
+     }
+
+     ulxr::CppString handle_index(const ulxr::HtmlFormData &amp;formdata, ulxr::CppString &amp;mimetype)
+     {
+       // set mime type for returned data
+       mimetype = "text/html";
+
+       ulxr::CppString s;
+
+       // move "index" data to return string
+
+       return s;
+     }
+ }
+
+ ...
+
+ // add handlers for requests to html resources
+ http_server.addHttpHandler("get",  ulxr::make_methodhandler(rpcinfo, &amp;RpcInfoHandler::handler));
+ http_server.addHttpHandler("post", ulxr::make_methodhandler(rpcinfo, &amp;RpcInfoHandler::handler));
+</verb></tscreen>
+
+
+<sect2>Processing HTML Data
+<p>
+Dealing with html files is often an error prone task. The helper class contains methods
+to generate the most common html sequences for anchors, forms and more.
+
+<tscreen><verb>
+  // create a standard html start sequence
+  resp = getHeader("Index");
+
+  // append a check box with unique name and according value
+  resp += makeCheckBox(makeIdent("method_enable_", i), "on", meth->isEnabled());
+
+  // append the standard html tail sequence
+  resp += getTail();
+</verb></tscreen>
+
+When you have to process form data you have to extract the according values. This may
+happen in the following manner:
+
+<tscreen><verb>
+ulxr::CppString handle_calc(const ulxr::HtmlFormData &amp;formdata, ulxr::CppString &amp;mimetype)
+{
+  mimetype = "text/html";
+
+  // check for existing and complete form data
+  if (   formdata.size() != 0
+      &amp;&amp; formdata.hasElement("lhs")
+      &amp;&amp; formdata.hasElement("rhs")
+      &amp;&amp; formdata.hasElement("operator")
+     )
+  {
+    // extract the values
+    int l = getLong(formdata.getElement("lhs")[0]);
+    int r = getLong(formdata.getElement("rhs")[0]);
+
+    // and process the values
+    ...
+  }
+
+  // generate response based on new data
+  ...
+}
+</verb></tscreen>
+
+<sect1>Adding security
+<p>
+<tt>ulxmlrpcpp</tt> provides two ways to add security to your transmissions.
+<p>
+First, you can use basic authentication as used with HTTP.
+
+<bf>But caution:</bf>
+This offers very little security. Think of it only as a protection against unintentional access,
+for example from web browsers. This way the browser shows the user an authentication dialog and
+he is aware of the forbidden area.
+
+<tscreen><verb>
+  // The server adds some users to it's own realm.
+  // "realm" usually describes a subdirectory on the server.
+
+  string realm = "SecureRPCRealm";
+  ulxr::HttpConnection conn (true, 0x7f000001, 32001);
+  ulxr::HttpProtocol prot(&amp;conn, conn.getHostName());
+  ulxr::HttpServer http_server (&amp;prot);
+
+  http_server.addRealm("/RPC-Sec", "SecureRPCRealm");
+  http_server.addAuthentication("ali-baba", "open-sesame", "SecureRPCRealm");
+
+  ...
+
+  // The rpc client uses the authenticated server this way
+  ulxr::MethodResponse resp = client.call(secureDispatcher, "/SecureRPC", "ali-baba", "open-sesame");
+
+  // A http client may set user and password for all http transmissions like this:
+  client.setMessageAuthentication("ali-baba", "open-sesame");
+</verb></tscreen>
+
+The second and more important step is to encrypt your calls and responses with strong cryptography.
+
+The idea with ulxmlrpcpp is to:
+
+<itemize>
+ <item>build a call and transform it into an xml structure
+ <item>encrypt this structure and send it as a single parameter to a special method on the server
+ <item>decrypt the parameter and dispatch it in a second stage to the correct internal method
+ <item>convert the response to an xml structure and sent back encrypted
+ <item>decrypt and decode the structure in an additional step to get the result
+</itemize>
+
+This way you can use the same methods as usual. It is just that you put your confidental
+data encrypted in an envelope which you can send visibly over public networks. The machine on the
+other side decrypts the data and does a second processing stage.
+
+With <tt>ulxmlrpcpp</tt> you do nothing special, you just <it>repeat</it> some steps.
+See <tt>secure_server.cpp</tt> and <tt>secure_client.cpp</tt> for almost complete
+examples how the whole might look like.
+
+
+<sect1>Multithreaded rpc server and client
+
+<sect2>The Client
+<p>
+
+The client part is almost equal to the single threaded version. The only
+thing you have to do is to provide an additional parameter
+which contains a method that handles the response. This can be a normal function or a member
+of an object:
+
+<tscreen><verb>
+  ulxr::MethodCall testcall ("testcall");
+  ulxr::HttpConnection conn (false, host, port);
+  ulxr::HttpProtocol prot(&amp;conn, conn.getHostName());
+  ulxr::Requester client(&amp;prot);
+  client.call(testcall, "/RPC2", ulxr::make_receiver(lister_func));
+</verb></tscreen>
+
+The <tt>call()</tt>) method
+sends the call and then creates a thread to start this method which is expected to handle the
+return value or maybe an error message. So the response handler should
+look something like this:
+
+<tscreen><verb>
+void lister_func (const ulxr::MethodResponse &amp;resp)
+{
+  if (!resp.isOK())
+  {
+    // handle this error
+    ...
+    return;
+  }
+
+  // Lock this area if neccessary
+  ulxr::Mutex::Locker locker(lister_mutex);
+
+  // extract and process the return values
+  unsigned num = ulxr::Integer(resp.getResult()).getInteger();
+  ....
+}
+</verb></tscreen>
+
+
+<sect2>The Server
+<p>
+Starting the multithreaded server is a bit more complicated than the single
+threaded. First you have to create the server object and tell it how many threads
+you want to have. Then you start the dispatcher threads. Afterwards you can either
+wait for all the threads to terminate or do something more useful until the
+termination.
+
+<tscreen><verb>
+    // add rpc methods
+
+    ...
+
+    // create the server object
+    ulxr::MultiThreadRpcServer server(protocol, num_threads);
+
+    // start all threads
+    unsigned started = server.dispatchAsync();
+
+    // do something useful
+
+    // wait for all threads to finish before terminating the application
+    server.waitAsync(false, true);
+</verb></tscreen>
+
+<p>
+One problem is it currently to terminate the server. Since I have not yet found
+a portable and good solution to make the threads terminate regularly while waiting
+for connections I usually use a shutdown method which I invoke via xml rpc.
+This method has to be sent to all threads. See the server example files.
+One big drawbacks is that you have to secure this method against attacks.
+
+<sect1>Multithreaded http server
+<p>
+To create a multithreaded http server you need to create an according
+server object with the number of desired threads. Then you start all the threads
+and after maybe doing something useful you must wait for the termination of
+all the threads.
+
+<tscreen><verb>
+    // setup connection and server object
+    ulxr::HttpConnection conn (true, host, port);
+    ulxr::HttpProtocol prot(&amp;conn, conn.getHostName());
+    ulxr::HttpServer http_server (&amp;prot, num_threads);
+
+    // setup the xml rpc dispatcher which is handled by the http server
+    ulxr::Dispatcher rpc_server;
+    http_server.setRpcDispatcher(&amp;rpc_server);
+    rpc_server.addMethod(&amp;testcall,
+                         ulxr::Struct::getValueName(),
+                         "testcall",
+                         ulxr::Integer::getValueName() + "," + ulxr::Integer::getValueName(),
+                         "Testcase with a c-function");
+
+    // add some handlers for requests to html resources
+    http_server.addHttpHandler("get",  ulxr::make_methodhandler(rpcinfo, &amp;RpcInfoHandler::handler));
+    http_server.addHttpHandler("post", ulxr::make_methodhandler(rpcinfo, &amp;RpcInfoHandler::handler));
+
+    // realms and authentication data
+    http_server.addRealm("/", "http-root-resource");
+    http_server.addAuthentication("ali-baba",
+                                  "open-sesame",
+                                  "http-root-resource");
+
+    http_server.addRealm("/RPC2", "rpc2-resource");
+    http_server.addAuthentication("ali-baba-rpc",
+                                  "open-sesame-rpc",
+                                  "rpc2-resource");
+
+    // set the http root
+    ulxr::CppString root_dir = "/usr/local/ulxmlrpcpp/public_html";
+    http_server.setHttpRoot(root_dir);
+
+    // start the threads
+    unsigned started = http_server.runPicoHttpd();
+
+    // do something useful
+
+    // wait for all the threads to terminate
+    http_server.waitAsync(false, true);
+  }
+</verb></tscreen>
+
+
+<sect1>Using the xml parser
+<p>
+<tt>ulxmlrpcpp</tt> uses <tt>expat</tt> as parser for xml. There are some helper classes.
+One of them forms a C++ wrapper to the C-functions
+in <tt>expat</tt> and one supports parsing using a simple state machine. Nested xml elements
+are modeled by deriving parser classes: "outer" elements derive from "inner" elements.
+<p>
+
+Parsing of a start tag is done in the following steps:
+
+<itemize>
+  <item>Check if the current object is able to handle the current element
+  <item>Otherwise delegate to the parent (which may as well call the former parent)
+  <item>Process the current element and remember the state for later use on a stack
+</itemize>
+
+Character data between the xml tags is stored for later use.
+
+<p>
+An ending tag is handled similarly:
+
+<itemize>
+  <item>Check if the current object is able to handle the current element
+  <item>Otherwise delegate to the parent
+  <item>Check for a well formed document (current tag matches element on the stack).
+        Process stored character data.
+</itemize>
+
+For examples on the working method see the various *parse.cpp files.
+
+<p>
+<bf>There is one pitfall:</bf> The first constructor in the chain must push an appropriate element
+onto the state stack because the parser methods rely upon being able to retrieve
+information about the current state.
+
+<tscreen><verb>
+ULXR_EXPORT ValueParser::ValueParser()
+{
+  states.push(new ValueState(eNone));
+}
+</verb></tscreen>
+
+
+<sect>Questions and Answers<p>
+
+None so far.
+
+<sect>Related Links<p>
+
+<descrip>
+  <tag/XML-RPC Homepage/
+     <htmlurl url="http://www.xmlrpc.com" name="http://www.xmlrpc.com">.
+
+  <tag/Another implementation of XML-RPC with lots of information/
+     <htmlurl url="http://xmlrpc-c.sourceforge.net"
+              name="http://xmlrpc-c.sourceforge.net">.
+
+  <tag/XML Standards/
+     <htmlurl url="http://www.w3.org/XML/" name="http://www.w3.org/XML/">.
+
+  <tag/A lot of Information Around XML/
+     <htmlurl url="http://www.xml.com" name="http://www.xml.com">.
+
+  <tag/Important Built-In Methods for Servers/
+     <htmlurl url="http://xmlrpc.usefulinc.com/doc/reserved.html"
+              name="http://xmlrpc.usefulinc.com/doc/reserved.html">.
+
+  <tag/Proposal for Standard Fault Codes/
+     <htmlurl url="http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php"
+              name="http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php">.
+
+  <tag/Unicode Consortium/
+    <htmlurl url="http://www.unicode.org"
+             name="http://www.unicode.org">
+
+  <tag/Socket Programming FAQ/
+     <htmlurl url="http://www.ibrado.com/sock-faq/"
+              name="http://www.ibrado.com/sock-faq/">.
+
+  <tag/RFC 2616 - Hypertext Transfer Protocal/
+     <htmlurl url="http://www.faqs.org/rfcs/rfc2616.html"
+              name="http://www.faqs.org/rfcs/rfc2616.html">.
+
+  <tag/RFC 2617 - HTTP Authentication/
+     <htmlurl url="http://www.faqs.org/rfcs/rfc2617.html"
+              name="http://www.faqs.org/rfcs/rfc2617.html">.
+
+  <tag/RFC 2822 - Internet Message Format/
+     <htmlurl url="http://www.faqs.org/rfcs/rfc2822.html"
+              name="http://www.faqs.org/rfcs/rfc2822.html">.
+
+  <tag/RFC 1341 - Format of Internet Message Bodies (explains base64)/
+     <htmlurl url="http://www.faqs.org/rfcs/rfc1341.html"
+              name="http://www.faqs.org/rfcs/rfc1341.html">.
+
+</descrip>
+
+<sect>Copyright<p>
+
+ulxmlrpcpp Copyright 2002-2005 Ewald Arnold , ulxmlrpcpp at ewald-arnold dot de
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation; either version 2 of the License,
+  or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+<p>
+</article>
